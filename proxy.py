@@ -30,17 +30,43 @@ country_codes = {
 }
 
 def fetch_real_proxies(proxy_type, country_code):
-    url = f"https://api.proxyscrape.com/v4/free-proxy-list/get?request=displayproxies&proxy_format=ipport&format=text&protocol={proxy_type}"
+    all_proxies = []
+    
+    # --- Source 1: Proxyscrape ---
+    proxyscrape_url = f"https://api.proxyscrape.com/v4/free-proxy-list/get?request=displayproxies&proxy_format=ipport&format=text&protocol={proxy_type}"
     if country_code:
-        url += f"&country={country_code}"
+        proxyscrape_url += f"&country={country_code}"
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        proxies = response.text.strip().split('\n')
-        return [proxy.strip() for proxy in proxies if proxy.strip()]
-    except Exception as e:
-        print(f"\n{Fore.RED}[!] Hata: Proxyler alinamadi. {e}")
-        return []
+        resp = requests.get(proxyscrape_url, timeout=10)
+        if resp.status_code == 200:
+            ps_list = [p.strip() for p in resp.text.strip().split('\n') if p.strip()]
+            all_proxies.extend(ps_list)
+    except:
+        pass
+
+    # --- Source 2: iplocate (GitHub) ---
+    # Github lists: all-proxies.txt, http.txt, https.txt, socks4.txt, socks5.txt
+    github_map = {
+        "all": "all-proxies.txt",
+        "http": "http.txt",
+        "https": "https.txt",
+        "socks4": "socks4.txt",
+        "socks5": "socks5.txt"
+    }
+    
+    if proxy_type in github_map:
+        github_url = f"https://raw.githubusercontent.com/iplocate/free-proxy-list/main/{github_map[proxy_type]}"
+        try:
+            resp = requests.get(github_url, timeout=10)
+            if resp.status_code == 200:
+                gh_list = [p.strip() for p in resp.text.strip().split('\n') if p.strip()]
+                all_proxies.extend(gh_list)
+        except:
+            pass
+
+    # --- De-duplicate and Return ---
+    final_proxies = list(set(all_proxies))
+    return final_proxies
 
 def save_proxies(proxy_type, proxies):
     idx = 1
