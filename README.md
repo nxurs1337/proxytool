@@ -12,4 +12,9 @@ Bu araç, ücretsiz proxy listelerini otomatik olarak çeker ve elinizdeki proxy
     * 50 Thread ile hızlı tarama.
     * Ping süresi, Ülke ve Anonimlik (Transparent/Elite) tespiti.
     * Çalışanları veya sadece düşük pingli (1000ms altı) olanları kaydetme seçeneği.
+ * **Kullanım**
+   * pip install requirements.txt
+   * py proxy.py
+   * bitti amunakoyum
+ 
 <img width="912" height="495" alt="image" src="https://github.com/user-attachments/assets/3bff7e5d-2782-4d7e-b7d5-5ddcd21faa23" />
